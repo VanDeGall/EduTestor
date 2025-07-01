@@ -35,7 +35,7 @@ def register():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
-       password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
+        password = generate_password_hash(request.form['password'], method='sha256')
         role = request.form['role']
         if User.query.filter_by(email=email).first():
             flash('Email already exists.')
@@ -65,6 +65,20 @@ def logout():
     session.pop('user_id', None)
     flash('You have been logged out.')
     return redirect(url_for('home'))
+
+@app.route('/delete_account', methods=['GET', 'POST'])
+def delete_account():
+    if 'user_id' not in session:
+        flash('Please login to delete your account.')
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    if request.method == 'POST':
+        db.session.delete(user)
+        db.session.commit()
+        session.pop('user_id', None)
+        flash('Your account has been deleted.')
+        return redirect(url_for('home'))
+    return render_template('delete_account.html', user=user)
 
 @app.route('/add_test', methods=['GET', 'POST'])
 def add_test():
