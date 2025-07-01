@@ -19,7 +19,7 @@ class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(500), nullable=False)
     option_a = db.Column(db.String(200), nullable=False)
-    option_b = db.db.Column(db.String(200), nullable=False)
+    option_b = db.Column(db.String(200), nullable=False)
     option_c = db.Column(db.String(200), nullable=False)
     correct = db.Column(db.String(1), nullable=False)
 
