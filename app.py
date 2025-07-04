@@ -35,7 +35,7 @@ def register():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
-       password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
+       password = generate_password_hash(request.form['password'], method='pbkdfz : sha256')
         role = request.form['role']
         if User.query.filter_by(email=email).first():
             flash('Email already exists.')
