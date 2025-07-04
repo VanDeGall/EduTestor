@@ -33,20 +33,21 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-       password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
-        role = request.form['role']
-        if User.query.filter_by(email=email).first():
-            flash('Email already exists.')
-            return redirect(url_for('register'))
-        new_user = User(name=name, email=email, password=password, role=role)
-        db.session.add(new_user)
-        db.session.commit()
-        flash('Registration successful. Please login.')
-        return redirect(url_for('login'))
-    return render_template('register.html')
-
+    name = request.form['name']
+    email = request.form['email']
+    password = generate_password_hash(
+        request.form['password'], method='pbkdf2:sha256'
+    )
+    role = request.form['role']
+    if User.query.filter_by(email=email).first():
+        flash('Email already exists.')
+        return redirect(url_for('register'))
+    new_user = User(name=name, email=email, password=password, role=role)
+    db.session.add(new_user)
+    db.session.commit()
+    flash('Registration successful. Please login.')
+    return redirect(url_for('login'))
+return render_template('register.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
