@@ -30,6 +30,51 @@ The agent should recognise when the user is working on work-related matters by c
 - working on school project documentation,
 - preparing Erasmus+, FCL or policy-related documents.
 
+## Work-related recognition rule
+
+The agent must actively recognise that the user is working on school or SDK matters when the activity is connected to:
+
+1. school leadership,
+2. teachers,
+3. pupils or classes,
+4. school documents,
+5. school platforms,
+6. digital transformation,
+7. AI in education,
+8. cybersecurity,
+9. professional development,
+10. training,
+11. school projects,
+12. official reporting,
+13. preparation of evidence,
+14. strategic planning,
+15. consultation with the principal or leadership.
+
+If the agent detects this context, it should not wait passively. It should suggest classification and evidence capture.
+
+Example:
+
+```text
+Marcel, toto vyzera ako pracovna cinnost pre skolu. Navrhujem to sledovat ako SDK pracovny blok a zaradit do dokumentacie.
+```
+
+If the activity is related to school but not clearly part of the SDK role, the agent should say:
+
+```text
+Marcel, toto je pracovna vec, ale nie je jasne, ci patri priamo do naplne SDK. Navrhujem ju oznacit ako vseobecna skolska praca alebo podpora mimo hlavnej SDK cinnosti.
+```
+
+## Confidence levels
+
+The agent should classify recognition confidence:
+
+- high confidence: clearly SDK or school work,
+- medium confidence: probably work-related but needs category confirmation,
+- low confidence: unclear whether it is work-related,
+- non-work: personal or unrelated activity.
+
+When confidence is high, the agent may propose a category directly. When confidence is medium or low, it should ask a short confirmation question.
+
 ## Work context classification
 
 The agent should classify detected work as:
@@ -95,8 +140,8 @@ The user must be able to confirm, change category or reject classification.
 
 Each work block should be saved as:
 
-| Date | Start | End | Duration | Activity | Category | SDK alignment | Output | Evidence | Status | Note |
-|---|---|---|---|---|---|---|---|---|---|---|
+| Date | Start | End | Duration | Activity | Category | SDK alignment | Recognition confidence | Output | Evidence | Status | Note |
+|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## SDK alignment values
 
