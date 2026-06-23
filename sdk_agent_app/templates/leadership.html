@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Nový podklad pre vedenie školy</h2>
+  <form method="post" action="{{ url_for('create_leadership_output') }}" class="form-stack">
+    <input type="date" name="date_prepared" value="{{ today }}">
+    <input name="topic" placeholder="Téma" required>
+    <select name="output_type">
+      <option value="briefing">Briefing</option>
+      <option value="approval request">Návrh na schválenie</option>
+      <option value="consultation proposal">Návrh na konzultáciu</option>
+      <option value="risk note">Riziková poznámka</option>
+      <option value="action item">Bod do akčného plánu</option>
+    </select>
+    <textarea name="summary" placeholder="Stručný obsah / dôvod" required></textarea>
+    <input name="related_sdk_area" placeholder="Súvisiaca oblasť ŠDK">
+    <textarea name="proposed_decision" placeholder="Aké rozhodnutie alebo konzultácia je potrebná?"></textarea>
+    <select name="status">
+      <option value="draft">Draft</option>
+      <option value="ready">Pripravené</option>
+      <option value="waiting">Čaká</option>
+    </select>
+    <input name="next_step" placeholder="Ďalší krok">
+    <button>Uložiť podklad</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Register podkladov pre vedenie</h2>
+  <table>
+    <thead>
+      <tr><th>Dátum</th><th>Téma</th><th>Typ</th><th>Stav</th><th>Rozhodnutie</th><th>Ďalší krok</th></tr>
+    </thead>
+    <tbody>
+    {% for item in rows %}
+      <tr>
+        <td>{{ item.date_prepared }}</td>
+        <td>{{ item.topic }}</td>
+        <td>{{ item.output_type }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.proposed_decision }}</td>
+        <td>{{ item.next_step }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
