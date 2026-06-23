@@ -96,6 +96,11 @@ body {
   font-size: 28px;
 }
 
+.muted {
+  color: var(--muted);
+  margin-top: -6px;
+}
+
 .active {
   border-color: var(--primary);
 }
@@ -123,6 +128,17 @@ button,
 }
 
 textarea { min-height: 86px; resize: vertical; }
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.check input {
+  width: auto;
+}
 
 button,
 .button {
