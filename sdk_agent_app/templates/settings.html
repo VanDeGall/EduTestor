@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Nastavenia asistenta</h2>
+  <p class="muted">Automatické sledovanie je v MVP vypnuté ako bezpečný predvolený stav. Manuálny časovač je dostupný na dashboarde.</p>
+  <form method="post" action="{{ url_for('update_settings') }}" class="form-stack">
+    <label class="check"><input type="checkbox" name="avatar_enabled" {% if settings.avatar_enabled %}checked{% endif %}> Zobraziť avatar</label>
+    <label class="check"><input type="checkbox" name="voice_input_enabled" {% if settings.voice_input_enabled %}checked{% endif %}> Povoliť hlasový vstup</label>
+    <label class="check"><input type="checkbox" name="voice_output_enabled" {% if settings.voice_output_enabled %}checked{% endif %}> Povoliť hlasový výstup</label>
+    <label class="check"><input type="checkbox" name="automatic_tracking_enabled" {% if settings.automatic_tracking_enabled %}checked{% endif %}> Povoliť automatické rozpoznávanie práce</label>
+    <label class="check"><input type="checkbox" name="silent_mode" {% if settings.silent_mode %}checked{% endif %}> Tichý režim</label>
+    <input name="default_export_folder" value="{{ settings.default_export_folder or '' }}" placeholder="Predvolený priečinok exportov">
+    <input type="time" name="workday_start" value="{{ settings.workday_start or '' }}">
+    <input type="time" name="workday_end" value="{{ settings.workday_end or '' }}">
+    <button>Uložiť nastavenia</button>
+  </form>
+</section>
+{% endblock %}
