@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Nový termín / upozornenie</h2>
+  <form method="post" action="{{ url_for('create_deadline') }}" class="form-stack">
+    <input name="title" placeholder="Názov termínu" required>
+    <input type="datetime-local" name="deadline_at" required>
+    <input name="source" placeholder="Zdroj, napr. ministerstvo, Erasmus, vedenie, školenie">
+    <select name="target_group">
+      <option value="user">Pre mňa</option>
+      <option value="teachers">Učitelia</option>
+      <option value="leadership">Vedenie</option>
+      <option value="school">Škola</option>
+    </select>
+    <select name="category">
+      <option value="training">Školenie</option>
+      <option value="report">Report</option>
+      <option value="policy">Policy / stratégia</option>
+      <option value="Erasmus">Erasmus+</option>
+      <option value="leadership">Vedenie</option>
+      <option value="document">Dokument</option>
+    </select>
+    <select name="alert_level">
+      <option value="info">Info</option>
+      <option value="attention">Pozor</option>
+      <option value="important">Dôležité</option>
+      <option value="critical">Kritické</option>
+    </select>
+    <button>Uložiť termín</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Termíny</h2>
+  <table>
+    <thead>
+      <tr><th>Termín</th><th>Názov</th><th>Zdroj</th><th>Skupina</th><th>Kategória</th><th>Úroveň</th><th>Stav</th></tr>
+    </thead>
+    <tbody>
+    {% for item in rows %}
+      <tr>
+        <td>{{ item.deadline_at }}</td>
+        <td>{{ item.title }}</td>
+        <td>{{ item.source }}</td>
+        <td>{{ item.target_group }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.alert_level }}</td>
+        <td>{{ item.status }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
