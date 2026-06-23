@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="grid stats">
+  <div class="card"><span>Dnes sledované</span><strong>{{ stats.tracked_minutes }} min</strong></div>
+  <div class="card"><span>ŠDK práca</span><strong>{{ stats.sdk_minutes }} min</strong></div>
+  <div class="card"><span>Mimo ŠDK</span><strong>{{ stats.non_sdk_minutes }} min</strong></div>
+  <div class="card"><span>Podklady pre vedenie</span><strong>{{ open_leadership }}</strong></div>
+</section>
+
+{% if active_block %}
+<section class="card active">
+  <h2>Aktívny pracovný blok</h2>
+  <p><strong>{{ active_block.title }}</strong> · {{ active_block.category }} · {{ active_block.sdk_alignment }}</p>
+  <form method="post" action="{{ url_for('stop_work_block', block_id=active_block.id) }}" class="inline-form">
+    <input name="output" placeholder="Aký výstup vznikol?">
+    <input name="next_step" placeholder="Ďalší krok">
+    <select name="leadership_relevance">
+      <option value="maybe">Možno pre vedenie</option>
+      <option value="yes">Áno, pre vedenie</option>
+      <option value="no">Nie</option>
+    </select>
+    <button class="danger">Zastaviť a uložiť</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="grid two">
+  <div class="card">
+    <h2>Rýchly zápis činnosti</h2>
+    <form method="post" action="{{ url_for('create_activity') }}" class="form-stack">
+      <input type="date" name="date" value="{{ today }}">
+      <input name="time" placeholder="Čas, napr. 09:30">
+      <textarea name="raw_note" placeholder="Čo si robil?" required></textarea>
+      <input name="clean_activity" placeholder="Upravený názov činnosti">
+      <select name="category">
+        <option>documentation and reporting</option>
+        <option>digital strategy</option>
+        <option>leadership briefing</option>
+        <option>teacher support</option>
+        <option>training creation</option>
+        <option>Microsoft 365</option>
+        <option>AI and Copilot</option>
+        <option>professional development</option>
+        <option>policy and strategy monitoring</option>
+        <option>technical support</option>
+        <option>non-SDK work</option>
+      </select>
+      <select name="sdk_alignment">
+        <option>directly aligned with SDK role</option>
+        <option>partially aligned with SDK role</option>
+        <option>support task</option>
+        <option>technical-coordination task</option>
+        <option>general school work</option>
+        <option>non-SDK task</option>
+      </select>
+      <select name="priority">
+        <option>medium</option>
+        <option>critical</option>
+        <option>high</option>
+        <option>low</option>
+        <option>archive</option>
+      </select>
+      <select name="size">
+        <option>S</option><option selected>M</option><option>L</option><option>XL</option><option>ongoing</option>
+      </select>
+      <input name="output" placeholder="Výstup / dôkaz">
+      <select name="report_include">
+        <option value="yes">Zahrnúť do výkazu</option>
+        <option value="maybe">Možno</option>
+        <option value="no">Nezahrnúť</option>
+        <option value="background">Len ako podklad</option>
+      </select>
+      <button>Uložiť činnosť</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Začať pracovný blok</h2>
+    <form method="post" action="{{ url_for('start_work_block') }}" class="form-stack">
+      <input name="title" placeholder="Názov pracovného bloku" required>
+      <select name="category">
+        <option>documentation and reporting</option>
+        <option>digital strategy</option>
+        <option>leadership briefing</option>
+        <option>teacher support</option>
+        <option>training creation</option>
+        <option>Microsoft 365</option>
+        <option>AI and Copilot</option>
+        <option>professional development</option>
+        <option>policy and strategy monitoring</option>
+        <option>technical support</option>
+      </select>
+      <select name="sdk_alignment">
+        <option>directly aligned with SDK role</option>
+        <option>partially aligned with SDK role</option>
+        <option>support task</option>
+        <option>technical-coordination task</option>
+        <option>general school work</option>
+        <option>non-SDK task</option>
+      </select>
+      <select name="recognition_confidence">
+        <option>high</option>
+        <option>medium</option>
+        <option>low</option>
+      </select>
+      <select name="leadership_relevance">
+        <option value="maybe">Možno pre vedenie</option>
+        <option value="yes">Áno, pre vedenie</option>
+        <option value="no">Nie</option>
+      </select>
+      <button>Spustiť sledovanie</button>
+    </form>
+  </div>
+</section>
+
+<section class="grid two">
+  <div class="card">
+    <h2>Posledné činnosti</h2>
+    <table>
+      <thead><tr><th>Dátum</th><th>Činnosť</th><th>Kategória</th><th>Priorita</th></tr></thead>
+      <tbody>
+      {% for item in recent_activities %}
+        <tr>
+          <td>{{ item.date }}</td>
+          <td>{{ item.clean_activity }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.priority }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Najbližšie termíny</h2>
+    <table>
+      <thead><tr><th>Termín</th><th>Názov</th><th>Úroveň</th></tr></thead>
+      <tbody>
+      {% for item in upcoming_deadlines %}
+        <tr>
+          <td>{{ item.deadline_at }}</td>
+          <td>{{ item.title }}</td>
+          <td>{{ item.alert_level }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Exporty</h2>
+  <div class="button-row">
+    <a class="button" href="{{ url_for('export_daily', date=today) }}">Denný XLSX</a>
+    <a class="button" href="{{ url_for('export_monthly', month=month) }}">Mesačný XLSX</a>
+    <a class="button" href="{{ url_for('export_leadership', month=month) }}">Podklady vedenie XLSX</a>
+  </div>
+</section>
+{% endblock %}
