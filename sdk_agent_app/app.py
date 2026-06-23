@@ -4,7 +4,7 @@ import uuid
 from datetime import date, datetime
 from pathlib import Path
 
-from flask import Flask, redirect, render_template, request, send_file, url_for
+from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for
 
 from .db import connect, fetch_all, fetch_one, init_db
 from .exporter import export_daily_log, export_leadership_register, export_monthly_report
@@ -33,6 +33,7 @@ def create_app() -> Flask:
         open_leadership = fetch_one(
             "SELECT COUNT(*) AS count FROM leadership_outputs WHERE status IN ('draft', 'ready', 'waiting')"
         )["count"]
+        evidence_count = fetch_one("SELECT COUNT(*) AS count FROM evidence_files")["count"]
         upcoming_deadlines = fetch_all("SELECT * FROM upcoming_deadlines_view LIMIT 5")
         recent_activities = fetch_all(
             "SELECT * FROM activities ORDER BY created_at DESC LIMIT 8"
@@ -45,10 +46,31 @@ def create_app() -> Flask:
             month=month,
             stats=stats,
             open_leadership=open_leadership,
+            evidence_count=evidence_count,
             upcoming_deadlines=upcoming_deadlines,
             recent_activities=recent_activities,
             active_block=active_block,
         )
+
+    @app.get("/api/health")
+    def api_health():
+        return jsonify({"success": True, "data": {"status": "ok"}, "error": None})
+
+    @app.get("/api/dashboard")
+    def api_dashboard():
+        today = date.today().isoformat()
+        stats = fetch_one(
+            """
+            SELECT
+                COALESCE(SUM(duration_minutes), 0) AS tracked_minutes,
+                COALESCE(SUM(CASE WHEN sdk_alignment LIKE 'directly%' THEN duration_minutes ELSE 0 END), 0) AS sdk_minutes,
+                COALESCE(SUM(CASE WHEN sdk_alignment LIKE 'non-SDK%' THEN duration_minutes ELSE 0 END), 0) AS non_sdk_minutes
+            FROM work_blocks
+            WHERE date = ?
+            """,
+            (today,),
+        )
+        return jsonify({"success": True, "data": stats, "error": None})
 
     @app.post("/activities")
     def create_activity():
@@ -198,6 +220,70 @@ def create_app() -> Flask:
     def deadlines():
         rows = fetch_all("SELECT * FROM deadlines ORDER BY deadline_at ASC")
         return render_template("deadlines.html", rows=rows)
+
+    @app.post("/evidence")
+    def create_evidence():
+        form = request.form
+        evidence_id = f"ev_{uuid.uuid4().hex[:12]}"
+        with connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO evidence_files (
+                    id, date, title, evidence_type, file_name, file_path,
+                    evidence_value, sensitive_data, anonymisation_needed, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    evidence_id,
+                    form.get("date") or date.today().isoformat(),
+                    form.get("title") or "Evidence",
+                    form.get("evidence_type") or "document",
+                    form.get("file_name") or "",
+                    form.get("file_path") or "",
+                    form.get("evidence_value") or "medium",
+                    1 if form.get("sensitive_data") == "on" else 0,
+                    1 if form.get("anonymisation_needed") == "on" else 0,
+                    form.get("status") or "confirmed",
+                ),
+            )
+            conn.commit()
+        return redirect(url_for("evidence"))
+
+    @app.get("/evidence")
+    def evidence():
+        rows = fetch_all("SELECT * FROM evidence_files ORDER BY date DESC, created_at DESC")
+        return render_template("evidence.html", rows=rows, today=date.today().isoformat())
+
+    @app.get("/settings")
+    def settings():
+        row = fetch_one("SELECT * FROM settings WHERE id = 'settings_default'")
+        return render_template("settings.html", settings=row)
+
+    @app.post("/settings")
+    def update_settings():
+        form = request.form
+        with connect() as conn:
+            conn.execute(
+                """
+                UPDATE settings
+                SET voice_input_enabled = ?, voice_output_enabled = ?, avatar_enabled = ?,
+                    automatic_tracking_enabled = ?, silent_mode = ?, default_export_folder = ?,
+                    workday_start = ?, workday_end = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = 'settings_default'
+                """,
+                (
+                    1 if form.get("voice_input_enabled") == "on" else 0,
+                    1 if form.get("voice_output_enabled") == "on" else 0,
+                    1 if form.get("avatar_enabled") == "on" else 0,
+                    1 if form.get("automatic_tracking_enabled") == "on" else 0,
+                    1 if form.get("silent_mode") == "on" else 0,
+                    form.get("default_export_folder") or "",
+                    form.get("workday_start") or "",
+                    form.get("workday_end") or "",
+                ),
+            )
+            conn.commit()
+        return redirect(url_for("settings"))
 
     @app.get("/exports/daily")
     def export_daily():
