@@ -18,6 +18,7 @@ SDK Strategic AI Assistant
 ├── platforms and AI tools
 ├── teacher methodology and training
 ├── policy, strategy and professional development monitoring
+├── database, API, exports and implementation specs
 └── legal, GDPR and safety support
 ```
 
@@ -30,6 +31,20 @@ SDK Strategic AI Assistant
 | `agent-instructions.md` | Agent behaviour | Core behavioural rules and response style |
 | `core-modules.md` | Core module structure | Main functional areas of the SDK Agent |
 | `knowledge-map.md` | Knowledge map | What the agent must know and connect |
+
+## Implementation and build files
+
+| File | Module | Main purpose |
+|---|---|---|
+| `local-app-implementation-spec.md` | Local app specification | Desktop app requirements, avatar, voice, tracking and local workflows |
+| `prototype-roadmap.md` | Prototype roadmap | Development phases from MVP to full assistant |
+| `data-model.md` | Data model | Tables and entities for work, evidence, deadlines and reports |
+| `database-schema.sql` | SQLite schema | Concrete database schema for the first local prototype |
+| `api-spec.md` | API specification | Endpoints for activities, work blocks, leadership outputs, exports and settings |
+| `ui-ux-spec.md` | UI/UX specification | Screens, controls, dashboard, avatar and workflow design |
+| `export-spec.md` | Export specification | XLSX, DOCX, PDF and report export requirements |
+| `security-permissions-spec.md` | Security and permissions | Permissions, safety boundaries, hidden monitoring prohibition and user approval rules |
+| `mvp-build-backlog.md` | MVP backlog | Buildable tasks and acceptance criteria for the first usable version |
 
 ## Communication and interface
 
@@ -70,6 +85,7 @@ SDK Strategic AI Assistant
 | File | Module | Main purpose |
 |---|---|---|
 | `legal-support.md` | Legal and competence support | Orientation support for SDK role, work scope and legal-administrative arguments |
+| `security-permissions-spec.md` | Security and permissions | Concrete permission model and safety controls for the application |
 
 ## Recommended use by task type
 
@@ -88,6 +104,11 @@ SDK Strategic AI Assistant
 | I need AI tool comparison | `universal-ai-school-ecosystem.md` |
 | I need a teacher training or lesson idea | `teacher-methodology-and-training.md` |
 | I need careful role or legal argumentation | `legal-support.md` |
+| I need API endpoints for development | `api-spec.md` |
+| I need database tables | `data-model.md` and `database-schema.sql` |
+| I need Excel/Word/PDF exports | `export-spec.md` |
+| I need screens and user flows | `ui-ux-spec.md` |
+| I need build tasks for MVP | `mvp-build-backlog.md` |
 
 ## Output principle
 
@@ -113,12 +134,32 @@ No module may perform external actions without the user's approval.
 
 The assistant may prepare, classify, recommend, summarise and warn. The user decides what is saved, sent, approved, presented, published or implemented.
 
+## Current implementation package
+
+The repository now contains a complete planning package for the first prototype:
+
+1. architecture,
+2. module index,
+3. local app specification,
+4. data model,
+5. SQLite schema,
+6. API specification,
+7. UI/UX specification,
+8. export specification,
+9. security and permissions,
+10. MVP build backlog.
+
 ## Next recommended development step
 
-Create implementation-level specifications for:
+Implement the MVP in this order:
 
-1. local desktop work monitor,
-2. avatar and voice interface,
-3. activity spreadsheet export,
-4. leadership evidence folder structure,
-5. scheduled policy and training monitoring.
+1. SQLite database initialization,
+2. Activity Inbox,
+3. Work Tracker,
+4. Evidence Register,
+5. Leadership Outputs,
+6. Deadline Register,
+7. XLSX exports,
+8. Dashboard,
+9. Settings,
+10. later voice, avatar and automatic recognition.
