@@ -2,3 +2,4 @@ Flask==3.0.3
 Flask_SQLAlchemy
 Werkzeug
 gunicorn
+openpyxl==3.1.5
