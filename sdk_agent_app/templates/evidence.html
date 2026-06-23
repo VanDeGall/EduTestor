@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Nový dôkaz / výstup práce</h2>
+  <form method="post" action="{{ url_for('create_evidence') }}" class="form-stack">
+    <input type="date" name="date" value="{{ today }}">
+    <input name="title" placeholder="Názov dôkazu" required>
+    <select name="evidence_type">
+      <option value="document">Dokument</option>
+      <option value="report">Report</option>
+      <option value="note">Poznámka</option>
+      <option value="table">Tabuľka</option>
+      <option value="training">Školenie</option>
+      <option value="transcript">Prepis</option>
+      <option value="screenshot">Screenshot</option>
+    </select>
+    <input name="file_name" placeholder="Názov súboru">
+    <input name="file_path" placeholder="Cesta k súboru, ak ju chceš evidovať">
+    <select name="evidence_value">
+      <option value="medium">Stredná dôkazová hodnota</option>
+      <option value="high">Vysoká dôkazová hodnota</option>
+      <option value="very high">Veľmi vysoká dôkazová hodnota</option>
+      <option value="low">Nízka dôkazová hodnota</option>
+    </select>
+    <label class="check"><input type="checkbox" name="sensitive_data"> Obsahuje citlivé údaje</label>
+    <label class="check"><input type="checkbox" name="anonymisation_needed"> Potrebná anonymizácia</label>
+    <select name="status">
+      <option value="confirmed">Potvrdené</option>
+      <option value="draft">Draft</option>
+      <option value="revised">Revidované</option>
+      <option value="archived">Archivované</option>
+    </select>
+    <button>Uložiť dôkaz</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Register dôkazov</h2>
+  <table>
+    <thead>
+      <tr><th>Dátum</th><th>Názov</th><th>Typ</th><th>Hodnota</th><th>Citlivé</th><th>Anonymizácia</th><th>Stav</th><th>Súbor</th></tr>
+    </thead>
+    <tbody>
+    {% for item in rows %}
+      <tr>
+        <td>{{ item.date }}</td>
+        <td>{{ item.title }}</td>
+        <td>{{ item.evidence_type }}</td>
+        <td>{{ item.evidence_value }}</td>
+        <td>{{ 'áno' if item.sensitive_data else 'nie' }}</td>
+        <td>{{ 'áno' if item.anonymisation_needed else 'nie' }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.file_name }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
